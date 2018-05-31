@@ -25,14 +25,14 @@ Field::Field(std::vector<GPSPoint> const & corners)
 	mShape = sf::ConvexShape();
 	mShape.setPointCount(mCorners.size());
 
+
+#ifdef PRINT_DEBUG
+	std::cout << "Origin Field: " << mShape.getOrigin().x  << " " << mShape.getOrigin().x << std::endl;
+#endif
+
 	for (size_t i = 0; i < mCorners.size(); i++)
 	{
-		//Coordinates need to be remapped for sfml output, so the values are a little bit bigger
-		//-> degrees get dsiarded and the value will be multiplied by a large number
-
-		//TODO: Fix mapping to SFML coordinates
 		sf::Vector2f point = mapToSFML(mCorners[i].mLat, mCorners[i].mLong);
-		//sf::Vector2f point = sf::Vector2f((float)mCorners[i].mLat, (float)mCorners[i].mLong);
 		mShape.setPoint(i, point);
 		
 #ifdef PRINT_DEBUG
