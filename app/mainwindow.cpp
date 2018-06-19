@@ -1,9 +1,8 @@
 #include "mainwindow.h"
 #include <QLabel>
-#include<QTextBrowser>
+#include <QTextBrowser>
 #include <QDebug>
-#include <QFile>
-#include <QTextStream>
+#include <fstream>
 
 QLabel *MainWindow::createLabel(const QString &text)
 {
@@ -17,28 +16,31 @@ void MainWindow::testSlot(double la, double lo)
     qDebug() << "La: " << la << " Lo: " << lo;
 }
 
-void initGpsSim(string const & filename)
+void MainWindow::initGpsSim(std::string const & filename)
 {
-    QFile file(filename);
-    file.open(QIODevice::ReadOnly);
-    QTextStream stream(&file);
+    std::ifstream file(filename, std::ios::in);
+    if (!file.is_open())
+    {
+        std::cerr << "There was a problem opening the coordinate input file!\n";
+        return;
+    }
     double num = 0.0;
     int cnt = 0;
     
     //Read all coordinates from the file (must always be in la lo pairs)
-    while(sream >> num)
+    while(file >> num)
     {
         GPSPoint * point = new GPSPoint();
         
         //First is always LA
         if((cnt % 2) == 0)
         {
-            point.mLat = num;
+            point->mLat = num;
         }
         //Second is always LO
         else
         {
-            point.mLong = num;
+            point->mLong = num;
             tractorPosition.push_back(point);
         }
             
