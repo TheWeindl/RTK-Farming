@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <QVector>
 #include "sfml_navigation.h"
 #include "borderlayout.h"
 #include "stackbuttons.h"
@@ -18,6 +19,8 @@ private:
     rtkMain* rtkmain;
     RTKSettings* rtkSettings;
     SFML_Navigation* Navigation_GUI;
+    
+    QVector<GPSPoint*> tractorPosition;
 
     QStackedWidget* stackWidget;
     StackButtons* menuButtons;
@@ -26,6 +29,7 @@ private:
     QLabel *createLabel(const QString &text);
 public slots:
     void testSlot(double la, double lo);
+    void initGpsSim(string const & filename);
 };
 
 #endif // MAINWINDOW_H
