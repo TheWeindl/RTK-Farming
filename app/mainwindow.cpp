@@ -2,6 +2,8 @@
 #include <QLabel>
 #include<QTextBrowser>
 #include <QDebug>
+#include <QFile>
+#include <QTextStream>
 
 QLabel *MainWindow::createLabel(const QString &text)
 {
@@ -13,6 +15,35 @@ QLabel *MainWindow::createLabel(const QString &text)
 void MainWindow::testSlot(double la, double lo)
 {
     qDebug() << "La: " << la << " Lo: " << lo;
+}
+
+void initGpsSim(string const & filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    QTextStream stream(&file);
+    double num = 0.0;
+    int cnt = 0;
+    
+    //Read all coordinates from the file (must always be in la lo pairs)
+    while(sream >> num)
+    {
+        GPSPoint * point = new GPSPoint();
+        
+        //First is always LA
+        if((cnt % 2) == 0)
+        {
+            point.mLat = num;
+        }
+        //Second is always LO
+        else
+        {
+            point.mLong = num;
+            tractorPosition.push_back(point);
+        }
+            
+        cnt++;
+    }
 }
 
 
