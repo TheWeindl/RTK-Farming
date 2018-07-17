@@ -3,6 +3,7 @@
 #include <QTextBrowser>
 #include <QDebug>
 #include <fstream>
+#include <QFile>
 
 QLabel *MainWindow::createLabel(const QString &text)
 {
@@ -11,41 +12,41 @@ QLabel *MainWindow::createLabel(const QString &text)
     return label;
 }
 
-void MainWindow::testSlot(double la, double lo)
+void MainWindow::testSlot()
 {
-    qDebug() << "La: " << la << " Lo: " << lo;
+    static int i = 0;
+    qDebug() << "La: " << tractorPosition[i]->mLat << " Lo: " << tractorPosition[i]->mLong;
+    Navigation_GUI->traktor->updatePosition(tractorPosition[i]->mLat, tractorPosition[i]->mLong);
+    if(i < tractorPosition.length()-1)
+    {
+        i++;
+    }
+    else
+    {
+        i = 0;
+    }
 }
 
-void MainWindow::initGpsSim(std::string const & filename)
+void MainWindow::initGpsSim(QString const & filename)
 {
-    std::ifstream file(filename, std::ios::in);
-    if (!file.is_open())
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly))
     {
         std::cerr << "There was a problem opening the coordinate input file!\n";
         return;
     }
-    double num = 0.0;
-    int cnt = 0;
-    
-    //Read all coordinates from the file (must always be in la lo pairs)
-    while(file >> num)
-    {
+    QTextStream in(&file);
+
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        QStringList fields = line.split(" ");
         GPSPoint * point = new GPSPoint();
-        
-        //First is always LA
-        if((cnt % 2) == 0)
-        {
-            point->mLat = num;
-        }
-        //Second is always LO
-        else
-        {
-            point->mLong = num;
-            tractorPosition.push_back(point);
-        }
-            
-        cnt++;
+        point->mLat = fields[0].toDouble();
+        point->mLong = fields[1].toDouble();
+        tractorPosition.push_back(point);
     }
+
+    file.close();
 }
 
 
@@ -57,6 +58,12 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     rtkSettings = new RTKSettings(nullptr, rtkmain);
 
     Navigation_GUI = new SFML_Navigation(this, QPoint(0,0), QSize(this->width(),this->height()), 16);
+
+    //Initialize the simulation of tractor movement from file
+    initGpsSim(":/simCoordinates.txt");
+    QTimer * GPStimer = new QTimer(this);
+    connect(GPStimer, SIGNAL(timeout()), this, SLOT(testSlot()));
+    GPStimer->start(1000);
 
     connect(rtkmain,SIGNAL(centerChanged(double,double)), Navigation_GUI->traktor, SLOT(updatePosition(double,double)));
 

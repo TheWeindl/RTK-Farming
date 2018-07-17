@@ -34,7 +34,7 @@ sf::CircleShape Traktor::getShape()
 	mapped.x = (float)(mPosition.mLat - (int)mPosition.mLat) * mult;
 	mapped.y = (float)(mPosition.mLong - (int)mPosition.mLong) * mult;
 
-	mTriangle.setPosition(mapped.x, mapped.y);
+    mTriangle.setPosition(mapped.x, mapped.y);
 
 	return mTriangle;
 }

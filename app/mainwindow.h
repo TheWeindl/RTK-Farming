@@ -15,7 +15,7 @@ class MainWindow : public QWidget
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    void initGpsSim(std::string const & filename);
+    void initGpsSim(QString const & filename);
 private:
     rtkMain* rtkmain;
     RTKSettings* rtkSettings;
@@ -29,7 +29,7 @@ private:
 
     QLabel *createLabel(const QString &text);
 public slots:
-    void testSlot(double la, double lo);
+    void testSlot();
 };
 
 #endif // MAINWINDOW_H
